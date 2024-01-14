@@ -1,0 +1,37 @@
+:host {
+  display: flex;
+  position: relative;
+  inset: 0;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+aside {
+  width: 128px;
+  position: absolute;
+  left: 0;
+  transform: translateX(-110%);
+  transition: opacity 16ms cubic-bezier(0.165, 0.84, 0.44, 1),
+    transform 16ms cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+:host([drawer-open]) aside {
+  transform: translateX(0);
+  transition: opacity 16ms cubic-bezier(0.165, 0.84, 0.44, 1),
+    transform 16ms cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+:host([drawer-open]) main {
+  transform: translateX(128px);
+  width: calc(100% - 128px);
+  transition: opacity 16ms cubic-bezier(0.165, 0.84, 0.44, 1),
+    transform 16ms cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.drawer-menu-button {
+  position: absolute;
+  z-index: 1000;
+}
