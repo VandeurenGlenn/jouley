@@ -1,9 +1,12 @@
 import { html } from 'lit-html'
-import '@vandeurenglenn/lit-elements/icon-set.js'
+import '@vandeurenglenn/lite-elements/icon-set.js'
 
 export default html`
   <custom-icon-set>
     <template>
+      <span name="add">@symbol-add</span>
+      <span name="check_box">@symbol-check_box</span>
+      <span name="check_box_unchecked">@symbol-check_box_outline_blank</span>
       <span name="play">@symbol-play_arrow</span>
       <span name="stop">@symbol-stop</span>
       <span name="pause">@symbol-pause</span>
@@ -22,6 +25,7 @@ export default html`
       <span name="heart_minus">@symbol-heart_minus</span>
       <span name="menu_open">@symbol-menu_open</span>
       <span name="menu">@symbol-menu</span>
+      <span name="settings">@symbol-settings</span>
     </template>
   </custom-icon-set>
 `

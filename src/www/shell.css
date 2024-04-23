@@ -6,13 +6,26 @@
   height: 100%;
   width: 100%;
 }
+header {
+  box-sizing: border-box;
+  padding: 12px;
+}
 aside {
-  width: 128px;
-  position: absolute;
+  box-sizing: border-box;
+  padding: 12px;
+  width: 240px;
+  bottom: 0;
+  top: 0;
   left: 0;
+  position: absolute;
   transform: translateX(-110%);
   transition: opacity 16ms cubic-bezier(0.165, 0.84, 0.44, 1),
     transform 16ms cubic-bezier(0.165, 0.84, 0.44, 1);
+
+  box-shadow: -5px -1px 5px 3px #000;
+}
+custom-selector {
+  height: 100%;
 }
 main {
   display: flex;
@@ -26,12 +39,13 @@ main {
 }
 
 :host([drawer-open]) main {
-  transform: translateX(128px);
-  width: calc(100% - 128px);
+  transform: translateX(240px);
+  width: calc(100% - 240px);
   transition: opacity 16ms cubic-bezier(0.165, 0.84, 0.44, 1),
     transform 16ms cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-.drawer-menu-button {
-  position: absolute;
-  z-index: 1000;
+
+[hidden] {
+  opacity: 0;
+  pointer-events: none;
 }

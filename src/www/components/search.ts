@@ -1,25 +1,18 @@
-import { render, html } from 'lit-html'
-import '@vandeurenglenn/lit-elements/icon.js'
+import '@vandeurenglenn/lite-elements/icon.js'
 import '@material/web/iconbutton/icon-button.js'
-import '@vandeurenglenn/lit-elements/toggle.js'
-import { BaseElement } from './../element.js'
+import '@vandeurenglenn/lite-elements/toggle.js'
+import { LiteElement, html } from '@vandeurenglenn/lite'
 
-class PlayerChrome extends BaseElement {
+class PlayerChrome extends LiteElement {
   playing = false
-  constructor() {
-    super()
-    this.attachShadow({ mode: 'open' })
-    this.render()
-  }
 
-  togglePlay = () => {
+  togglePlay() {
     this.playing = !this.playing
     if (this.playing) {
     }
-    this.render()
   }
 
-  get template() {
+  render() {
     return html`
       <style>
         :host {
@@ -39,10 +32,6 @@ class PlayerChrome extends BaseElement {
       <md-icon-button><custom-icon icon="skip_next"></custom-icon></md-icon-button>
       <md-icon-button><custom-icon icon="fast_forward"></custom-icon></md-icon-button>
     `
-  }
-
-  render() {
-    render(this.template, this.shadowRoot)
   }
 }
 

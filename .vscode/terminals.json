@@ -1,0 +1,15 @@
+{
+  "autorun": true,
+  "autokill": true,
+  "terminals": [{
+    "name": "watch",
+    "commands": [
+      "npm run watch"
+    ]
+  }, {
+    "name": "start",
+    "commands": [
+      "npm run start"
+    ]
+  }]
+}

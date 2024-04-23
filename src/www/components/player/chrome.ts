@@ -1,7 +1,7 @@
 import { render, html } from 'lit-html'
-import '@vandeurenglenn/lit-elements/icon.js'
+import '@vandeurenglenn/lite-elements/icon.js'
 import '@material/web/iconbutton/icon-button.js'
-import '@vandeurenglenn/lit-elements/toggle.js'
+import '@vandeurenglenn/lite-elements/toggle.js'
 
 class PlayerChrome extends HTMLElement {
   playing = false

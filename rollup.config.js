@@ -1,11 +1,13 @@
 import typescript from '@rollup/plugin-typescript'
 import resolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
 import materialSymbols from 'rollup-plugin-material-symbols'
 import { cssModules } from 'rollup-plugin-css-modules'
 import { htmlModules } from 'rollup-plugin-html-modules'
 import { cp, opendir, unlink, readdir } from 'fs/promises'
 import { join } from 'path'
 import { globby } from 'globby'
+import replace from '@rollup/plugin-replace'
 
 try {
   await opendir('./app/www/themes/default')
@@ -30,7 +32,7 @@ const include = (input) => ({
   }
 })
 
-const clean = async (dir) => {
+const clean = async (dir, options = { deep: false, excludes: [] }) => {
   return {
     name: 'clean', // this name will show up in warnings and errors
     generateBundle: async () => {
@@ -43,9 +45,9 @@ const clean = async (dir) => {
             !file.includes('sw.js') &&
             !file.includes('workbox') &&
             !file.includes('preload') &&
-            !file.includes('app')
+            !options.excludes?.includes(file)
           )
-            removals.push(unlink(join(dir, file)))
+            if (!deep && file.split(/\/||\\\\||\\/).length > 1) removals.push(unlink(join(dir, file)))
         }
         return Promise.all(removals)
       } catch {
@@ -78,12 +80,12 @@ export default [
   },
   {
     input: ['src/app.ts'],
-    external: ['electron'],
+    external: ['electron', './chokidar.js'],
     output: {
       dir: 'app',
       format: 'es'
     },
-    plugins: [typescript(), resolve()]
+    plugins: [clean('app'), typescript()]
   },
   {
     input: './node_modules/@leofcoin/storage/exports/store.js',
@@ -93,12 +95,25 @@ export default [
     }
   },
   {
+    input: './node_modules/chokidar/index.js',
+    output: {
+      file: 'app/chokidar.js',
+      format: 'es'
+    },
+    plugins: [
+      commonjs(),
+      replace({
+        "import require$$1 from 'fsevents';": ''
+      })
+    ]
+  },
+  {
     input: ['src/preload.ts'],
     external: ['electron'],
     output: {
       dir: 'app',
       format: 'cjs'
     },
-    plugins: [typescript(), resolve()]
+    plugins: [clean('app'), typescript(), resolve()]
   }
 ]
