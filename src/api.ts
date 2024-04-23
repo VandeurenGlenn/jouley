@@ -56,17 +56,6 @@ const getMusicInfo = async (musicBuffer) => {
 const addToMusicLibrary = async (fd, path, filename, removeOriginal) => {
   const buffer = await fd.readFile()
   const info = await getMusicInfo(buffer)
-  // let tagInfo
-  // if (info.metadata.format.tagTypes.length === 1) {
-  //   tagInfo = info.metadata.native[info.metadata.format.tagTypes[0]]
-  // } else {
-  //   tagInfo = info.metadata.format.tagTypes.reduce((set, tagType) => {
-  //     if (set.length < info.metadata.native[tagType].length) {
-  //       set = info.metadata.native[tagType]
-  //     }
-  //     return set
-  //   }, [])
-  // }
   const newPath = [musicLibraryLocation]
   if (info.metadata.common.artist) newPath.push(info.metadata.common.artist)
   if (info.metadata.common.album) newPath.push(info.metadata.common.album)
