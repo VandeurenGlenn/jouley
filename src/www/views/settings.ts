@@ -2,8 +2,6 @@ import { LiteElement, customElement, html, css, property } from '@vandeurenglenn
 import '@vandeurenglenn/lite-elements/typography.js'
 import '@vandeurenglenn/lite-elements/toggle-button.js'
 import '@vandeurenglenn/flex-elements/container.js'
-import '@vandeurenglenn/flex-elements/row.js'
-import '@vandeurenglenn/flex-elements/it.js'
 
 @customElement('settings-view')
 export class SettingsView extends LiteElement {

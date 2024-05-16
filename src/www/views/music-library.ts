@@ -1,17 +1,40 @@
-import { html, render } from 'lit-html'
+import { LiteElement, customElement, html, css, property, query } from '@vandeurenglenn/lite'
+import { LibraryTrack } from '../../types/library.js'
+import { StyleList } from '@vandeurenglenn/lite/element'
+import '@vandeurenglenn/flex-elements/container.js'
 
-class MusicLibraryView extends HTMLElement {
-  constructor() {
-    super()
-    this.attachShadow({ mode: 'open' })
-    this.render()
+@customElement('music-library-view')
+export class MusicLibraryView extends LiteElement {
+  @query('custom-pages') accessor pages
+
+  select(selected) {
+    this.pages.select(selected)
   }
+
+  static styles?: StyleList = [
+    css`
+      :host {
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+        overflow-y: auto;
+      }
+
+      .container {
+        max-width: 1470px;
+        width: 100%;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+    `
+  ]
+
   render() {
-    render(this.template, this.shadowRoot)
-  }
-
-  get template() {
-    return html` <p>lib</p> `
+    return html`
+      <custom-pages>
+        <music-library-songs-view data-route="music-library-songs"></music-library-songs-view>
+      </custom-pages>
+    `
   }
 }
-customElements.define('music-library-view', MusicLibraryView)

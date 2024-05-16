@@ -4,6 +4,14 @@ import LittlePubSub from '@vandeurenglenn/little-pubsub'
 globalThis.pubsub = globalThis.pubsub || new LittlePubSub(true)
 import { settings } from './api.js'
 
+ipcRenderer.on('library-track-added', function (evt, message) {
+  console.log(message) // Returns: {'SAVED': 'File Saved'}
+})
+
+ipcRenderer.on('library-track-adding', function (evt, message) {
+  console.log(message) // Returns: {'SAVED': 'File Saved'}
+})
+
 const _versions = {
   node: () => process.versions.node,
   chrome: () => process.versions.chrome,

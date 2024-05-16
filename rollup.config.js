@@ -25,10 +25,11 @@ let originalInput
 
 const include = (input) => ({
   name: 'include',
-  buildStart: async (options) => {
+  options: async (options) => {
     if (!originalInput) originalInput = options.input
     if (typeof input === 'string') input = [input]
     options.input = [...originalInput, ...(await globby(input))]
+    return options
   }
 })
 
@@ -57,25 +58,29 @@ const clean = async (dir, options = { deep: false, excludes: [] }) => {
   }
 }
 
+const { generateBundle } = await clean('app/www')
+generateBundle()
+
 export default [
   {
-    input: ['src/www/shell.ts'],
+    input: ['src/www/shell.ts', ...(await globby('src/www/views'))],
     output: {
       dir: 'app/www',
       format: 'es'
     },
     plugins: [
       clean('app/www'),
-      htmlModules(),
+      // htmlModules(),
       resolve(),
-      cssModules(),
       typescript({
         compilerOptions: {
           outDir: 'app/www'
         }
       }),
-      include('./src/www/views'),
-      materialSymbols({ placeholderPrefix: 'symbol' })
+      // include('./src/www/views'),
+      cssModules(),
+      materialSymbols({ placeholderPrefix: 'symbol' }),
+      materialSymbols({ placeholderPrefix: 'filled_symbol', styling: { fill: 1 } })
     ]
   },
   {

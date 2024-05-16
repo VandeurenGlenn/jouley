@@ -6,9 +6,9 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 console.log(__dirname)
-
+let win
 function createWindow() {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -17,6 +17,10 @@ function createWindow() {
   })
 
   win.loadFile('www/index.html')
+}
+
+export const notify = (event, data) => {
+  win.webContents.send(event, data)
 }
 
 app.whenReady().then(async () => {

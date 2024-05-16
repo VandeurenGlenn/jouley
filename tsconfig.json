@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
     "target": "ES2022",
-    "outDir": "./app",
+    "experimentalDecorators": false,
+    "useDefineForClassFields": false,
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "allowJs": true,
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "types": ["node"]
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }

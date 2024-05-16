@@ -21,9 +21,61 @@ class JouleyShell extends LiteElement {
   @query('custom-pages')
   accessor _pages
 
+  @property() accessor selected
+
   async _selected({ detail }) {
+    this.selected = detail
     if (!customElements.get(`${detail}-view`)) await import(`./${detail}.js`)
     this._pages.select(detail)
+  }
+
+  async _subRouteSelected({ detail }) {
+    if (!customElements.get(`${detail}-view`)) await import(`./${detail}.js`)
+    this._pages.select(detail)
+  }
+
+  _renderMusicLibrarySubRail() {
+    return html`
+      <custom-drawer-item route="music-library-songs">
+        <custom-icon icon="music_note"></custom-icon>
+        <flex-it></flex-it>
+        <custom-typography size="medium">songs</custom-typography>
+      </custom-drawer-item>
+
+      <custom-drawer-item route="music-library-playlists">
+        <custom-icon icon="featured_playlist"></custom-icon>
+        <flex-it></flex-it>
+        <custom-typography size="medium">playlists</custom-typography>
+      </custom-drawer-item>
+
+      <custom-drawer-item route="music-library-recents">
+        <custom-icon icon="fiber_new"></custom-icon>
+        <flex-it></flex-it>
+        <custom-typography size="medium">recently added</custom-typography>
+      </custom-drawer-item>
+    `
+  }
+
+  _renderVideoLibrarySubRail() {
+    return html`
+      <custom-drawer-item route="video-library-songs">
+        <custom-icon icon="videocam"></custom-icon>
+        <flex-it></flex-it>
+        <custom-typography size="medium">videos</custom-typography>
+      </custom-drawer-item>
+
+      <custom-drawer-item route="video-library-playlists">
+        <custom-icon icon="featured_playlist"></custom-icon>
+        <flex-it></flex-it>
+        <custom-typography size="medium">playlists</custom-typography>
+      </custom-drawer-item>
+
+      <custom-drawer-item route="video-library-recents">
+        <custom-icon icon="fiber_new"></custom-icon>
+        <flex-it></flex-it>
+        <custom-typography size="medium">recently added</custom-typography>
+      </custom-drawer-item>
+    `
   }
 
   render() {
@@ -31,7 +83,7 @@ class JouleyShell extends LiteElement {
       ${icons}
       <custom-theme load-symbols="false"></custom-theme>
       <aside>
-        <custom-selector attr-for-selected="route" @selected=${this._selected.bind(this)}>
+        <custom-selector class="rail" attr-for-selected="route" @selected=${this._selected.bind(this)}>
           <custom-drawer-item route="music-library">
             <custom-icon icon="library_music"></custom-icon>
             <flex-it></flex-it>
@@ -52,6 +104,20 @@ class JouleyShell extends LiteElement {
             <custom-typography size="medium">settings</custom-typography>
           </custom-drawer-item>
         </custom-selector>
+
+        <custom-selector attr-for-selected="route" @selected=${this._subRouteSelected.bind(this)}>
+          <!--<custom-drawer-item route="music-library-dashboard">
+            <custom-icon icon="dashboard"></custom-icon>
+            <flex-it></flex-it>
+            <custom-typography size="medium">dashboard</custom-typography>
+          </custom-drawer-item>-->
+
+          ${this.selected === 'music-library'
+            ? this._renderMusicLibrarySubRail()
+            : this.selected === 'video-library'
+            ? this._renderVideoLibrarySubRail()
+            : ''}
+        </custom-selector>
       </aside>
       <main>
         <header>
@@ -60,6 +126,7 @@ class JouleyShell extends LiteElement {
             .togglers=${['menu', 'menu_open']}
           ></custom-toggle-button>
           <search-component></search-component>
+          <notification-component></notification-component>
         </header>
         <custom-pages attr-for-selected="route">
           <settings-view route="settings"></settings-view>

@@ -12,6 +12,9 @@ import { win32 } from 'path'
 import { Settings, WatchFolderOptions } from './types/settings.js'
 import extensions from './extensions.js'
 import Watcher from './watcher.js'
+import getAlbumArt from './album-art.js'
+import mime from 'mime-types'
+import { notify } from './app.js'
 
 const { username, homedir } = os.userInfo()
 
@@ -47,16 +50,23 @@ const watchers = []
 
 const _watchers = {}
 
-const getMusicInfo = async (musicBuffer) => {
-  const fileType = await fileTypeFromBuffer(musicBuffer)
-  const metadata = await mm.parseBuffer(musicBuffer, fileType.mime)
+const getMusicInfo = async (musicBuffer, path) => {
+  let fileType = await fileTypeFromBuffer(musicBuffer)
+  if (!fileType) fileType = { ext: parse(path).ext.replace('.', ''), mime: mime.lookup(path) }
+  const metadata = await mm.parseBuffer(musicBuffer, fileType ? fileType.mime : mime.lookup(path))
   return { metadata, fileType }
 }
 
 const addToMusicLibrary = async (fd, path, filename, removeOriginal) => {
+  notify('library-track-addeding', {
+    path,
+    filename
+  })
   const buffer = await fd.readFile()
-  const info = await getMusicInfo(buffer)
+
+  const info = await getMusicInfo(buffer, path)
   const newPath = [musicLibraryLocation]
+
   if (info.metadata.common.artist) newPath.push(info.metadata.common.artist)
   if (info.metadata.common.album) newPath.push(info.metadata.common.album)
   if (info.metadata.common.track.no !== null && info.metadata.common.title) {
@@ -90,34 +100,49 @@ const addToMusicLibrary = async (fd, path, filename, removeOriginal) => {
     await mkdir(parsed.dir, { recursive: true })
   }
 
-  const fileLibraryPath = join(parsed.dir, `${parsed.name}.${info.fileType.ext}`)
+  const sanitizeName = (name) =>
+    name.replaceAll('"', "'").replaceAll('feat.', 'featuring ').replaceAll('.', '')
+
+  const fileLibraryPath = join(parsed.dir, `${sanitizeName(parsed.name)}.${info.fileType.ext}`)
     .split(sep)
     .join('/')
-    .replaceAll('"', "'")
 
   try {
     await writeFile(fileLibraryPath, buffer)
   } catch (error) {
     console.error(error)
   }
+
+  const hasher = await createHash('sha256')
+  hasher.update(buffer)
+  const hash = hasher.digest('hex')
   await fd.close()
 
-  const hasher = await createHash('sha1')
-  hasher.push(buffer)
-  const hash = hasher.digest('hex')
-
-  if (!(await libraryStorage.has('music'))) await libraryStorage.put('music', JSON.stringify({}))
-  const lib = JSON.parse(decoder.decode(await libraryStorage.get('music')))
+  if (!(await libraryStorage.has('tracks'))) await libraryStorage.put('tracks', JSON.stringify({}))
+  const lib = JSON.parse(decoder.decode(await libraryStorage.get('tracks')))
   // lib.
+  // if (!info.metadata.common.picture) {
+  //   const albumArt = await getAlbumArt(info.metadata.common.artist, info.metadata.common.album)
+  //   info.metadata.common.picture = [albumArt]
+  // }
   if (lib[hash]) console.warn(`duplicate file found ${path}, ignoring for now`)
   else {
     lib[hash] = {
       path: fileLibraryPath,
-      metadata: info.metadata.common
+      metadata: info.metadata.common,
+      duration: info.metadata.format.duration,
+      albumArt: await getAlbumArt(info.metadata.common.artist, info.metadata.common.album)
     }
-    await libraryStorage.put('music', JSON.stringify(lib))
+    await libraryStorage.put('tracks', JSON.stringify(lib))
     if (removeOriginal) await unlink(path)
   }
+
+  notify('library-track-added', {
+    path: fileLibraryPath,
+    metadata: info.metadata.common,
+    duration: info.metadata.format.duration,
+    albumArt: await getAlbumArt(info.metadata.common.artist, info.metadata.common.album)
+  })
 }
 
 const removeFromMusicLibrary = (path) => {}
@@ -126,12 +151,18 @@ const setupWatcher = async (path, removeOriginal) => {
   watchers.push(path)
   const watcher = new Watcher(path, extensions.music)
 
-  watcher.on('change', ({ type, path, fd, filename }) => {
+  // todo remove dir
+  watcher.on('change', async ({ type, path, fd, filename }) => {
     try {
-      if (type === 'add') addToMusicLibrary(fd, path, filename, removeOriginal)
-    } catch {
+      if (type === 'add') await addToMusicLibrary(fd, path, filename, removeOriginal)
+    } catch (error) {
+      console.log(error)
+
       console.log(`ignoring: ${path}, possibly removed already`)
     }
+
+    if (fd) await fd.close()
+
     // do we really need remove?
     // if (type === 'remove') console.log({ path })
   })

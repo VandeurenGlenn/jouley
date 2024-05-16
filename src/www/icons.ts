@@ -5,6 +5,11 @@ export default html`
   <custom-icon-set>
     <template>
       <span name="add">@symbol-add</span>
+      <span name="album">@symbol-album</span>
+      <span name="artist">@symbol-artist</span>
+      <span name="dashboard">@symbol-dashboard</span>
+      <span name="featured_playlist">@symbol-featured_play_list</span>
+      <span name="fiber_new">@symbol-fiber_new</span>
       <span name="check_box">@symbol-check_box</span>
       <span name="check_box_unchecked">@symbol-check_box_outline_blank</span>
       <span name="play">@symbol-play_arrow</span>
@@ -24,8 +29,14 @@ export default html`
       <span name="heart_plus">@symbol-heart_plus</span>
       <span name="heart_minus">@symbol-heart_minus</span>
       <span name="menu_open">@symbol-menu_open</span>
+      <span name="music_note">@symbol-music_note</span>
       <span name="menu">@symbol-menu</span>
       <span name="settings">@symbol-settings</span>
+      <span name="thumb_up">@symbol-thumb_up</span>
+      <span name="thumb_down">@symbol-thumb_down</span>
+      <span name="videocam">@symbol-videocam</span>
+
+      <span name="filled_thumb_up">@filled_symbol-thumb_up</span>
     </template>
   </custom-icon-set>
 `
